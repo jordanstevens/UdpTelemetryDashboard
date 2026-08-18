@@ -28,7 +28,7 @@ void setup() {
 
 void loop() {
   telemetry.sequence = ++seq;
-  telemetry.voltage = random(110, 130) / 10;
+  telemetry.voltage = random(110, 130) / 10.00;
   udp.beginPacket(udpIP, udpPort);
   udp.write((uint8_t*)&telemetry, sizeof(telemetry));
   udp.endPacket();
