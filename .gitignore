@@ -1,2 +1,5 @@
 # Wifi credentials
 WiFiCreds.h
+
+# Python Virtual Environment
+venv/
