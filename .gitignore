@@ -3,3 +3,5 @@ WiFiCreds.h
 
 # Python Virtual Environment
 venv/
+
+__pycache__/
