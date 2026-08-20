@@ -5,20 +5,29 @@
       <title>Telemetry Dashboard</title>
       <link rel = "stylesheet" type = "text/css" href = "/static/TelemetryDashboard.css">
    </head>
-   <body>
-      <div class = "top" id = "top">
-         <span><h1>Sensor Telemetry</h1></span>
-         <div class = "info" id = "info">
-            <span class = "sequence" id = "seq">0</span>
-            <span class = "time" id = "time">0</span>
-         </div>
-      </div>
+   <body>      
       <div class = "main">
-         <span class = "volt" id = "volts">0.00</span>         
+         <div class = "info" id = "info">
+            <span class = "title">Sensor Telemetry</span>
+            <span class = "time" id = "time">0</span>
+            <span class = "signal" id = "signal">0</span>
+            <span class = "sequence" id = "seq">0</span>            
+            <span class = "volt" id = "volts">0.00</span>            
+         </div>
+         <div class="charts" id="charts">
+            <div class="card1">
+               <canvas id="signal_chart"></canvas>
+            </div>
+            <div class="card2">
+               <canvas id="volt_chart"></canvas>
+            </div>
+         </div>
+         
       </div>
       <div class = "footer">
          <span class = "bottom" id = "status">Waiting for transmission..</span>
       </div>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="/static/TelemetryDashboard.js"></script>   
    </body>
 
