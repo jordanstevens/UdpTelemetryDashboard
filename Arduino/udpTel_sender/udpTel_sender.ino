@@ -10,6 +10,7 @@ WiFiUDP udp;
 struct __attribute__((packed)) Data{
   uint32_t sequence;
   float voltage;
+  long signalStrength;
 };
 Data telemetry;
 uint32_t seq = 0;
@@ -27,6 +28,8 @@ void setup() {
 }
 
 void loop() {
+  long signal = WiFi.RSSI();
+  telemetry.signalStrength = signal;
   telemetry.sequence = ++seq;
   telemetry.voltage = random(110, 130) / 10.00;
   udp.beginPacket(udpIP, udpPort);
