@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import uvicorn
 
-STRUCT_FORMAT = "<If"
+STRUCT_FORMAT = "<Ifl"
 EXPECTED_SIZE = struct.calcsize(STRUCT_FORMAT)
 UDPIP = "0.0.0.0"
 UDPPORT = YOUR_PORT
@@ -20,9 +20,10 @@ class myProtocol(asyncio.DatagramProtocol):
       if len(data) != EXPECTED_SIZE:
          return
       try:
-         sequence, voltage = struct.unpack(STRUCT_FORMAT, data)
+         sequence, voltage, signal = struct.unpack(STRUCT_FORMAT, data)
          self.app_state.clear()
          self.app_state.update({
+            "signal": signal,
             "sequence": sequence,
             "voltage": round(voltage,2),
             "connected": True
