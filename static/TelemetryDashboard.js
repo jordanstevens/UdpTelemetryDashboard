@@ -2,7 +2,7 @@
 
 const signal_ctx = document.getElementById('signal_chart').getContext('2d');
 const volt_ctx = document.getElementById('volt_chart').getContext('2d');
-Chart.defaults.color = 'rgb(180, 38, 10)';
+Chart.defaults.color = 'rgb(255,255,255)';
 const sig_chart = new Chart(signal_ctx, {
     type: 'line',
     data: {
@@ -10,21 +10,50 @@ const sig_chart = new Chart(signal_ctx, {
         datasets: [{
             label: [],
             data: [],
-            borderWidth: 2,
-            borderColor: 'rgb(164, 164, 161)',
+            borderWidth: 1,
+            borderColor: 'rgb(255,255,255)',
             backgroundColor: 'rgb(164, 164, 161)',
-            fill: false
+            fill: false,
+            pointRadius: 5,
+            pointBackgroundColor: function(context){
+                const index = context.dataIndex;
+                const value = context.dataset.data[index];
+                if(value >= -55) return '#4caf50';
+                if(value >= -70) return '#ff9800';
+                if(value < -80) return '#FF0000'; 
+            }
         }]
     },
     options: {
         responsive: true,
         animation: false,
         normalized: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,          
+                text: 'Signal Strength',
+                color: 'rgb(255,255,255)',          
+                font: {
+                    size: 18,           
+                    weight: 'bold'      
+                },
+                padding: { top: 10, bottom: 30 } // Optional: Spacing
+            },
+            legend: {
+                labels: {
+                    boxWidth: 0
+                }
+            }
+        },
         scales: {
             x: {
-                title: { display: true, text: 'Sequence #'},
+                title: { display: false, text: 'Sequence #'},
                 grid: {
                     color: 'rgb(114, 113, 101)'
+                },
+                ticks: {
+                    color: 'rgb(0,255,255)'
                 }
             },
             y: {
@@ -46,25 +75,47 @@ const v_chart = new Chart(volt_ctx, {
         datasets: [{
             label: [],
             data: [],
-            borderWidth: 2,
-            borderColor: 'rgb(164, 164, 161)',
+            borderWidth: 1,
+            borderColor: 'rgb(255,255,255)',
             backgroundColor: 'rgb(164, 164, 161)',
-            fill: false
+            fill: false,
+            pointRadius: 5
         }]
     },
     options: {
         responsive: true,
         animation: false,
         normalized: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,          
+                text: 'Voltage',
+                color: 'rgb(255,255,255)',          
+                font: {
+                    size: 18,           
+                    weight: 'bold'      
+                },
+                padding: { top: 10, bottom: 30 } 
+            },
+            legend: {
+                labels: {
+                    boxWidth: 0
+                }
+            }
+        },
         scales: {
             x: {
-                title: { display: true, text: 'Sequence #'},
+                title: { display: false, text: 'Sequence #'},
                 grid: {
                     color: 'rgb(114, 113, 101)'
+                },
+                ticks: {
+                    color: 'rgb(0,255,255)'
                 }
             },
             y: {
-                title: {display: true, text: 'Volts'},
+                title: {display: true, text: 'VDC'},
                 grid: {
                     color: 'rgb(114, 113, 101)'
                 },
@@ -76,11 +127,12 @@ const v_chart = new Chart(volt_ctx, {
 })
 
 async function updateCharts(sequence, signal, volts){
-    const MAX_SEQ = 3;
-    const MAX_V = 3;
+    const MAX_SEQ = 4;
+    const MAX_V = 4;
     sig_chart.data.labels.push(sequence);
     v_chart.data.labels.push(sequence);
     sig_chart.data.datasets[0].data.push(`${signal}`);
+    
     v_chart.data.datasets[0].data.push(volts);
 
     if(sig_chart.data.labels.length > MAX_SEQ){
@@ -110,7 +162,7 @@ async function fetchTelemetry() {
         const data = await response.json();
         console.log(data);
         const signalSpan = document.getElementById('signal');
-        signalSpan.innerText = `Signal Strength: ${data.signal ? data.signal : ___}dBm`;
+        signalSpan.innerText = `Signal Strength: ${data.signal ? data.signal : ___} dBm`;
         if(data.signal >= -55){
             signalSpan.style.color = "#4caf50";
             
@@ -122,7 +174,7 @@ async function fetchTelemetry() {
             signalSpan.style.color = "#FF0000";
         }
         document.getElementById('seq').innerText = `Sequence: ${data.sequence ? data.sequence : "___"}`;
-        document.getElementById('volts').innerText = `Voltage: ${data.voltage ? data.voltage.toFixed(2) : "___"}`;
+        document.getElementById('volts').innerText = `Voltage: ${data.voltage ? data.voltage.toFixed(2) : "___"} VDC`;
         
         const statusDiv = document.getElementById('status');
         if (data.connected) {

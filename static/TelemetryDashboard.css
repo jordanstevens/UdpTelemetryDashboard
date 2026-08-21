@@ -1,71 +1,54 @@
-body {
+html, body {
    background-color: rgb(31, 26, 26);
+   height: 100%;
+   margin: 0;
+   overflow: hidden;
 }
 .main{
    display: flex;
-   flex-flow: row nowrap;
-}
-.info{
-   display: flex;
-   flex-flow: column nowrap;
-   border: 1pt solid dimgray;
-   background-color:rgb(31, 26, 26);
-   border-radius: 15px;
-   flex: 1 0 20%;
-   justify-content: space-evenly;
-   align-items: center;
-   font-family:monospace;
-   font-weight: bold;
-   font-size:x-large;
-   margin-right: 2em;
-}
-.info * {
-   background-color: lightgray;
-   align-self: stretch;
-   justify-self: stretch;
-   text-align: center;
-   margin-left: 12px;
-   margin-right: 12px;
-   margin-top: 2px;
-   margin-bottom: 2px;
-   border: 1pt inset dimgray;
+   flex-direction: column;
+   height: 100vh;
    
 }
-.title {
-   margin-top: 1ex;
-   margin-bottom: 1em;
+.header{
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   padding: 20px;
+   
+}
+.header * {
+   color: white;
+   font-family: monospace;
+}
+.sequence{
+   color:aqua;
+}
+.general{
+   display: flex;
+   justify-content: space-evenly;
+}
+.signal{
+   font-family: monospace;
 }
 .volt{
-   margin-bottom: 1em;
+   font-family: monospace;
+   color: white;
 }
 .charts{
    display: flex;
-   flex-flow: row nowrap;
-   border: 1pt solid dimgray;
-   border-radius: 15pt;
-   flex: 1 0 70%;
-   justify-content: space-around;
-   align-items: center;
-   
+   flex: 1;
+   min-height: 0;
+   gap: 20px;
+   padding: 50px;
 }
-
-.card1{
+.chart_wrapper{
+   flex: 1;
+   min-width: 0;
    position:relative;
-   flex: 1 1 30%;
-   max-width: 600px;
-   margin: 2em;
-   border: 1pt solid dimgray;
+   height: 100%;
    background-color: rgb(31, 26, 26);
-   border-radius: 15pt;
-
-}
-.card2{
-   position:relative;
-   flex: 1 1 30%;
-   max-width: 600px;
-   margin: 2em;
-   border: 1pt solid dimgray;
-   background-color: rgb(31, 26, 26);
-   border-radius: 15pt;
-
+   text-align: center;
+   font-weight: bold;
+   font-size:large;
 }

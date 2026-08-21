@@ -7,25 +7,23 @@
    </head>
    <body>      
       <div class = "main">
-         <div class = "info" id = "info">
-            <span class = "title">Sensor Telemetry</span>
-            <span class = "time" id = "time">0</span>
-            <span class = "signal" id = "signal">0</span>
-            <span class = "sequence" id = "seq">0</span>            
-            <span class = "volt" id = "volts">0.00</span>            
+         <div class = "header">
+            <div class = "general">
+               <span class = "bottom" id = "status">Waiting for transmission..</span>
+               <span class = "time" id = "time">0</span>
+               <span class = "sequence" id = "seq">0</span>            
+            </div>            
          </div>
          <div class="charts" id="charts">
-            <div class="card1">
+            <div class="chart_wrapper">
+               <span class = "signal" id = "signal">0</span>
                <canvas id="signal_chart"></canvas>
             </div>
-            <div class="card2">
+            <div class="chart_wrapper">
+               <span class = "volt" id = "volts">0.00</span>
                <canvas id="volt_chart"></canvas>
             </div>
          </div>
-         
-      </div>
-      <div class = "footer">
-         <span class = "bottom" id = "status">Waiting for transmission..</span>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="/static/TelemetryDashboard.js"></script>   
