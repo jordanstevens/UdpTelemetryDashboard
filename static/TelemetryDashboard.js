@@ -1,9 +1,15 @@
 
-
+const stats = {
+    signal: {min: 0, max: 0, avg: 0, sum: 0, count: 0},
+    temperature: {min: 0, max: 0, avg: 0, sum: 0, count: 0},
+    humidity: {min: 0, max: 0, avg: 0, sum: 0, count: 0},    
+}
 const signal_ctx = document.getElementById('signal_chart').getContext('2d');
-const volt_ctx = document.getElementById('volt_chart').getContext('2d');
+const temp_ctx = document.getElementById('temperature_chart').getContext('2d');
+const hum_ctx = document.getElementById('humidity_chart').getContext('2d');
 Chart.defaults.color = 'rgb(255,255,255)';
-const sig_chart = new Chart(signal_ctx, {
+
+const signal_chart = new Chart(signal_ctx, {
     type: 'line',
     data: {
         labels: [],
@@ -29,17 +35,13 @@ const sig_chart = new Chart(signal_ctx, {
         animation: false,
         normalized: true,
         maintainAspectRatio: false,
-        plugins: {
-            title: {
-                display: false,          
-                text: 'Signal Strength',
-                color: 'rgb(255,255,255)',          
-                font: {
-                    size: 18,           
-                    weight: 'bold'      
-                },
-                padding: { top: 10, bottom: 30 } // Optional: Spacing
-            },
+        layout: {
+            padding: {
+                bottom: 40,
+                right: 30,
+            }
+        },
+        plugins: {           
             legend: {
                 labels: {
                     boxWidth: 0
@@ -48,12 +50,11 @@ const sig_chart = new Chart(signal_ctx, {
         },
         scales: {
             x: {
-                title: { display: false, text: 'Sequence #'},
                 grid: {
                     color: 'rgb(114, 113, 101)'
                 },
                 ticks: {
-                    color: 'rgb(0,255,255)'
+                    color: 'rgb(36, 84, 212)'
                 }
             },
             y: {
@@ -62,13 +63,12 @@ const sig_chart = new Chart(signal_ctx, {
                     color: 'rgb(114, 113, 101)'
                 },
                 suggestedMin: -100,
-                suggestedMax: -30
+                suggestedMax: -10
             }
         }
     }
 })
-
-const v_chart = new Chart(volt_ctx, {
+const temp_chart = new Chart(temp_ctx, {
     type: 'line',
     data: {
         labels: [],
@@ -77,7 +77,13 @@ const v_chart = new Chart(volt_ctx, {
             data: [],
             borderWidth: 1,
             borderColor: 'rgb(255,255,255)',
-            backgroundColor: 'rgb(164, 164, 161)',
+            pointBackgroundColor: function(context){
+                const index = context.dataIndex;
+                const value = context.dataset.data[index];
+                if(value <= 82) return '#4caf50';
+                if(value <= 87) return '#ff9800';
+                else return '#FF0000'; 
+            },
             fill: false,
             pointRadius: 5
         }]
@@ -87,17 +93,13 @@ const v_chart = new Chart(volt_ctx, {
         animation: false,
         normalized: true,
         maintainAspectRatio: false,
+        layout: {
+            padding: {
+                bottom: 40,
+                right: 30
+            }
+        },
         plugins: {
-            title: {
-                display: false,          
-                text: 'Voltage',
-                color: 'rgb(255,255,255)',          
-                font: {
-                    size: 18,           
-                    weight: 'bold'      
-                },
-                padding: { top: 10, bottom: 30 } 
-            },
             legend: {
                 labels: {
                     boxWidth: 0
@@ -106,46 +108,111 @@ const v_chart = new Chart(volt_ctx, {
         },
         scales: {
             x: {
-                title: { display: false, text: 'Sequence #'},
                 grid: {
                     color: 'rgb(114, 113, 101)'
                 },
                 ticks: {
-                    color: 'rgb(0,255,255)'
+                    color: 'rgb(36, 84, 212)'
                 }
             },
             y: {
-                title: {display: true, text: 'VDC'},
+                title: {display: true, text: '°F'},
                 grid: {
                     color: 'rgb(114, 113, 101)'
                 },
-                suggestedMin: 8,
-                suggestedMax: 14
+                suggestedMin: 70,
+                suggestedMax: 100
+            }
+        }
+    }
+})
+const humidity_chart = new Chart(hum_ctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: [],
+            data: [],
+            borderWidth: 1,
+            borderColor: 'rgb(255,255,255)',
+            pointBackgroundColor: function(context){
+                const index = context.dataIndex;
+                const value = context.dataset.data[index];
+                if(value < 30) return '#FF0000';
+                if(value < 40) return '#ff9800';
+                if(value < 50) return '#4caf50';
+                if(value < 60) return '#ff9800';
+                else return '#FF0000';
+            },
+            fill: false,
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        animation: false,
+        normalized: true,
+        maintainAspectRatio: false,
+        layout: {
+            padding: {
+                bottom: 40,
+                right: 30
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    boxWidth: 0
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgb(114, 113, 101)'
+                },
+                ticks: {
+                    color: 'rgb(36, 84, 212)'
+                }
+            },
+            y: {
+                title: {display: true, text: '%'},
+                grid: {
+                    color: 'rgb(114, 113, 101)'
+                },
+                suggestedMin: 0,
+                suggestedMax: 100
             }
         }
     }
 })
 
-async function updateCharts(sequence, signal, volts){
-    const MAX_SEQ = 4;
-    const MAX_V = 4;
-    sig_chart.data.labels.push(sequence);
-    v_chart.data.labels.push(sequence);
-    sig_chart.data.datasets[0].data.push(`${signal}`);
-    
-    v_chart.data.datasets[0].data.push(volts);
+async function updateCharts(sequence, signal, temperature, humidity){
+    const MAX_TICKS = 4;
 
-    if(sig_chart.data.labels.length > MAX_SEQ){
-        sig_chart.data.labels.shift();
-        sig_chart.data.datasets[0].data.shift();
+    signal_chart.data.labels.push(sequence);
+    signal_chart.data.datasets[0].data.push(`${signal}`);
+    if(signal_chart.data.labels.length > MAX_TICKS){
+        signal_chart.data.labels.shift();
+        signal_chart.data.datasets[0].data.shift();
     }
-    sig_chart.update('none');
+    signal_chart.update('none');
 
-    if(v_chart.data.labels.length > MAX_V){
-        v_chart.data.labels.shift();
-        v_chart.data.datasets[0].data.shift();
+    temp_chart.data.labels.push(sequence);
+    temp_chart.data.datasets[0].data.push(temperature);
+    if(temp_chart.data.labels.length > MAX_TICKS){
+        temp_chart.data.labels.shift();
+        temp_chart.data.datasets[0].data.shift();
     }
-    v_chart.update('none');
+    temp_chart.update('none');
+   
+    humidity_chart.data.labels.push(sequence);
+    humidity_chart.data.datasets[0].data.push(humidity);
+    if(humidity_chart.data.labels.length > MAX_TICKS){
+        humidity_chart.data.labels.shift();
+        humidity_chart.data.datasets[0].data.shift();
+    }
+    humidity_chart.update('none');
 }
 
 function updateClock() {
@@ -156,16 +223,84 @@ function updateClock() {
     }
 }
 
+async function updateStats(sig, temp, hum){ 
+    const signals = stats["signal"];
+    const temps = stats["temperature"];
+    const hums = stats["humidity"];
+    if (stats.signal.count == 0){
+        signals.min = sig;
+        signals.max = sig;
+        signals.sum = sig;
+        signals.count ++;
+
+        temps.min = temp;
+        temps.max = temp;
+        temps.sum = temp;
+        temps.count ++;
+
+        hums.min = hum;
+        hums.max = hum;
+        hums.sum = hum;
+        hums.count ++;
+    }
+    else{
+        if(stats.signal.min > sig){
+            stats.signal.min = sig;
+        }
+        if(sig > stats.signal.max){
+            stats.signal.max = sig;
+        }
+        stats.signal.sum += sig;
+        stats.signal.count += 1;
+        stats.signal.avg = (stats.signal.sum / stats.signal.count).toFixed(2);
+
+        console.log(`temp: ${temp}`);
+        if(stats.temperature.min > temp){
+            stats.temperature.min = temp;
+        }
+        if(temp > stats.temperature.max){
+            stats.temperature.max = temp;
+        }
+        stats.temperature.sum += temp;
+        stats.temperature.count += 1;
+        stats.temperature.avg = (stats.temperature.sum / stats.temperature.count).toFixed(2);
+
+        if(stats.humidity.min > hum){stats.humidity.min = hum}
+        if(hum > stats.humidity.max){stats.humidity.max = hum}
+        stats.humidity.sum += hum;
+        stats.humidity.count += 1;
+        stats.humidity.avg = (stats.humidity.sum / stats.humidity.count).toFixed(2);
+    }
+}
+
+async function viewStats(){
+    document.getElementById('signal_min').innerText = `Low: ${stats.signal.min.toFixed(2)}`;
+    document.getElementById('signal_max').innerText = `High: ${stats.signal.max.toFixed(2)}`;
+    document.getElementById('signal_avg').innerText = `Avg: ${stats.signal.avg}`;
+    
+    document.getElementById('temperature_min').innerText = `Low: ${stats.temperature.min.toFixed(2)}`;
+    document.getElementById('temperature_max').innerText = `High: ${stats.temperature.max.toFixed(2)}`;
+    document.getElementById('temperature_avg').innerText = `Avg: ${stats.temperature.max.toFixed(2)}`;
+
+    document.getElementById('humidity_min').innerText = `Low: ${stats.humidity.min.toFixed(2)}`;
+    document.getElementById('humidity_max').innerText = `High: ${stats.humidity.max.toFixed(2)}`;
+    document.getElementById('humidity_avg').innerText = `Avg: ${stats.humidity.max.toFixed(2)}`;
+}
+
 async function fetchTelemetry() {
     try {
         const response = await fetch('/api/telemetry');
         const data = await response.json();
-        console.log(data);
         const signalSpan = document.getElementById('signal');
+        const tempSpan = document.getElementById('temperature');
+        const humSpan = document.getElementById('humidity');
+        const statusDiv = document.getElementById('status');
+        
+        document.getElementById('seq').innerText = `Packet: ${data.sequence ? data.sequence : "___"}`;
+
         signalSpan.innerText = `Signal Strength: ${data.signal ? data.signal : ___} dBm`;
         if(data.signal >= -55){
             signalSpan.style.color = "#4caf50";
-            
         }
         else if(data.signal > -70 && data.signal < -55){
             signalSpan.style.color = "#ff9800";
@@ -173,18 +308,46 @@ async function fetchTelemetry() {
         else if(data.signal < -80){
             signalSpan.style.color = "#FF0000";
         }
-        document.getElementById('seq').innerText = `Sequence: ${data.sequence ? data.sequence : "___"}`;
-        document.getElementById('volts').innerText = `Voltage: ${data.voltage ? data.voltage.toFixed(2) : "___"} VDC`;
         
-        const statusDiv = document.getElementById('status');
+        tempSpan.innerText = `Temperature: ${data.temperature ? data.temperature.toFixed(2) : "___"} °F`;
+        if(data.temperature > 87){
+            tempSpan.style.color = "#FF0000";
+        }
+        else if(data.temperature > 82){
+            tempSpan.style.color = "#ff9800";
+        }
+        else{
+            tempSpan.style.color = "#4caf50";
+        }
+       
+        humSpan.innerText = `Relative Humidity: ${data.humidity ? data.humidity.toFixed(2) : "___"} %`;
+        if(data.humidity < 30){
+            humSpan.style.color = "#FF0000";
+        }
+        else if(data.humidity < 40){
+            humSpan.style.color = "#ff9800";
+        }
+        else if(data.humidity < 50){
+            humSpan.style.color = "#4caf50"
+        }
+        else if(data.humidity < 60){
+            humSpan.style.color = "#ff9800";
+        }
+        else{
+            humSpan.style.color = "#FF0000";
+        }
+
         if (data.connected) {
-            statusDiv.innerText = "Connected.";
+            statusDiv.innerText = "Connection OK";
             statusDiv.style.color = "#4caf50";
         } else {
             statusDiv.innerText = "Waiting for transmission...";
             statusDiv.style.color = "#888";
         }
-        updateCharts(data.sequence, data.signal, data.voltage);
+
+        updateStats(data.signal, data.temperature, data.humidity);
+        updateCharts(data.sequence, data.signal, data.temperature, data.humidity);
+        viewStats();
 
     } catch (error) {
         console.error("Failed to fetch telemetry data:", error);

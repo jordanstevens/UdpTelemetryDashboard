@@ -8,39 +8,51 @@ html, body {
    display: flex;
    flex-direction: column;
    height: 100vh;
-   
+   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;   
 }
 .header{
    display: flex;
    flex-direction: column;
-   gap: 20px;
-   padding: 20px;
-   
+   padding: 10px;   
 }
 .header * {
    color: white;
-   font-family: monospace;
+   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+   background-color: rgb(31, 26, 26);
+   border: 1pt solid rgb(56, 54, 54);
+   border-radius: 1rex;
+   padding-left: 1rex;
+   padding-right: 1rex;
 }
 .sequence{
-   color:aqua;
+   color: rgb(36, 84, 212);   
 }
 .general{
    display: flex;
    justify-content: space-evenly;
-}
-.signal{
-   font-family: monospace;
-}
-.volt{
-   font-family: monospace;
-   color: white;
+   background-color: rgb(56, 54, 54);
+   border: 1pt solid rgb(31, 26, 26);
+   border-radius: 100vh;
 }
 .charts{
    display: flex;
    flex: 1;
    min-height: 0;
-   gap: 20px;
-   padding: 50px;
+   gap: 2%;
+   padding: 1%;
+   background-color: rgb(56, 54, 54);
+   border: 2rex solid rgb(31, 26, 26);
+   border-radius: 2rem;
+}
+.charts2{
+   display: flex;
+   flex: 1;
+   min-height: 0;
+   gap: 2%;
+   padding: 1%;
+   background-color: rgb(56, 54, 54);
+   border: 2rex solid rgb(31, 26, 26);
+   border-radius: 2rem;
 }
 .chart_wrapper{
    flex: 1;
@@ -49,6 +61,49 @@ html, body {
    height: 100%;
    background-color: rgb(31, 26, 26);
    text-align: center;
-   font-weight: bold;
    font-size:large;
+   border: .25 solid rgb(56, 54, 54);
+   border-radius: 2rex;
+}
+.stats_wrapper{
+   flex: 1;
+   min-height: 0;
+   position: relative;
+   height: 100%;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-evenly;
+   background-color: rgb(31, 26, 26);
+   text-align: center;
+   border: .25rex solid rgb(56, 54, 54);
+   border-radius: 2rex;
+}
+.stats_wrapper * {     
+   border: 1pt solid white;
+   color: white;
+}
+.stats_row{
+   display: flex;
+   min-height: 0;
+   border: .25rex solid rgb(56, 54, 54);
+   background-color: rgb(56, 54, 54);;
+   justify-content:space-around;
+   border-radius: 1rex;
+   margin: 1rex;
+}
+.stats_row * {
+   padding-left: 1rex;
+   padding-right: 1rex;
+   border-radius: 1rex;
+   border-color: rgb(56, 54, 54);
+   background-color: rgb(31, 26, 26);
+   min-width: 0;
+   min-height: 0;
+   font-size:1.5cqw;
+}
+.sensor_title{
+   background-color:rgb(56, 54, 54);
+}
+#RH{
+   padding-right: 5%;
 }

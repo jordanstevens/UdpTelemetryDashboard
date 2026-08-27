@@ -9,24 +9,49 @@
       <div class = "main">
          <div class = "header">
             <div class = "general">
-               <span class = "bottom" id = "status">Waiting for transmission..</span>
+               <span class = "status" id = "status">Waiting for transmission..</span>
                <span class = "time" id = "time">0</span>
                <span class = "sequence" id = "seq">0</span>            
             </div>            
          </div>
-         <div class="charts" id="charts">
+         <div class="charts" id = "charts">
             <div class="chart_wrapper">
                <span class = "signal" id = "signal">0</span>
-               <canvas id="signal_chart"></canvas>
+               <canvas id = "signal_chart"></canvas>
             </div>
             <div class="chart_wrapper">
-               <span class = "volt" id = "volts">0.00</span>
-               <canvas id="volt_chart"></canvas>
+               <span class = "temperature" id = "temperature">0.00</span>
+               <canvas id = "temperature_chart"></canvas>
+            </div>
+         </div>
+         <div class = "charts2" id = "charts2">
+            <div class = "stats_wrapper">
+               <div class = "stats_row">
+                     <span class = "sensor_title">RSSI dBM</span>
+                     <span class = "signal_avg" id = "signal_avg">0.00</span>
+                     <span class = "signal_min" id = "signal_min">0.00</span>
+                     <span class = "signal_max" id = "signal_max">0.00</span>
+               </div>
+               <div class = "stats_row">
+                     <span class = "sensor_title"> Temp F </span>
+                     <span class = "temp_avg" id = "temperature_avg">0.00</span>
+                     <span class = "temp_min" id = "temperature_min">0.00</span>
+                     <span class = "temp_max" id = "temperature_max">0.00</span>
+               </div>
+               <div class = "stats_row">
+                     <span class = "sensor_title" id = "RH">% RH</span>
+                     <span class = "humidity_avg" id = "humidity_avg">0.00</span>
+                     <span class = "humidity_min" id = "humidity_min">0.00</span>
+                     <span class = "humidity_max" id = "humidity_max">0.00</span>
+               </div>
+            </div>
+            <div class = "chart_wrapper">
+               <span class = "humidity" id = "humidity">0.00</span>
+               <canvas id = "humidity_chart"></canvass>
             </div>
          </div>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="/static/TelemetryDashboard.js"></script>   
    </body>
-
 </html>
