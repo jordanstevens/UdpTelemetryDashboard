@@ -73,23 +73,20 @@ html, body {
    display: flex;
    flex-direction: column;
    justify-content: space-evenly;
+   color: white;
    background-color: rgb(31, 26, 26);
    text-align: center;
    border: .25rex solid rgb(56, 54, 54);
    border-radius: 2rex;
 }
-.stats_wrapper * {     
-   border: 1pt solid white;
-   color: white;
-}
 .stats_row{
    display: flex;
    min-height: 0;
-   border: .25rex solid rgb(56, 54, 54);
+   margin: 1rex;
    background-color: rgb(56, 54, 54);;
    justify-content:space-around;
+   border: .25rex solid rgb(56, 54, 54);
    border-radius: 1rex;
-   margin: 1rex;
 }
 .stats_row * {
    padding-left: 1rex;
