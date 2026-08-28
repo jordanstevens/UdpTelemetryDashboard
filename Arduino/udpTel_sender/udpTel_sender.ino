@@ -6,8 +6,7 @@
 #include <Adafruit_BME280.h>
 #include "WiFiCreds.h"
 
-const char* udpIP = "YOUR_SERVER_IP";
-const int udpPort = YOUR_PORT;
+
 const int ambientPa = 101975;
 WiFiUDP udp;
 Adafruit_BME280 bme;
