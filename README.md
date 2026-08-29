@@ -1,6 +1,6 @@
 # ESP32 Telemetry Dashboard
 A real-time IoT telemetry system that collects temperature and humidity data from an ESP32 microcontroller via UDP packets and visualizes it on a web dashboard served by FastAPI.
-
+<img width="3837" height="1656" alt="Telemetry Dashboard 2" src="https://github.com/user-attachments/assets/443cbb4d-3036-4f22-82f7-46d16995b449" />
 ## Data Flow
 1. The ESP32 microcontroller reads environmental sensor data and transmits it over the local network as raw UDP packets.
 2. An asynchronous FastAPI server hosts the static frontend files and simultaneously listens on a specific UDP port to capture incoming sensor packets.
