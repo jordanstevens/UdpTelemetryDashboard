@@ -217,7 +217,7 @@ async function updateCharts(sequence, signal, temperature, humidity){
 
 function updateClock() {
     const timeElement = document.getElementById('time');
-    if (timeElement) {
+    if (timeElement){
         const now = new Date();
         timeElement.innerText = now.toLocaleTimeString();
     }
@@ -254,7 +254,6 @@ async function updateStats(sig, temp, hum){
         stats.signal.count += 1;
         stats.signal.avg = (stats.signal.sum / stats.signal.count).toFixed(2);
 
-        console.log(`temp: ${temp}`);
         if(stats.temperature.min > temp){
             stats.temperature.min = temp;
         }
@@ -287,18 +286,16 @@ async function viewStats(){
     document.getElementById('humidity_avg').innerText = `Avg: ${stats.humidity.max.toFixed(2)}`;
 }
 
-async function fetchTelemetry() {
-    try {
-        const response = await fetch('/api/telemetry');
-        const data = await response.json();
+function processTelemetry(data) {
+    // try {       
         const signalSpan = document.getElementById('signal');
         const tempSpan = document.getElementById('temperature');
         const humSpan = document.getElementById('humidity');
-        const statusDiv = document.getElementById('status');
+        // const statusDiv = document.getElementById('status');
         
         document.getElementById('seq').innerText = `Packet: ${data.sequence ? data.sequence : "___"}`;
 
-        signalSpan.innerText = `Signal Strength: ${data.signal ? data.signal : ___} dBm`;
+        signalSpan.innerText = `Signal Strength: ${data.signal ? data.signal : "___"} dBm`;
         if(data.signal >= -55){
             signalSpan.style.color = "#4caf50";
         }
@@ -337,31 +334,127 @@ async function fetchTelemetry() {
             humSpan.style.color = "#FF0000";
         }
 
-        if (data.connected) {
-            statusDiv.innerText = "Connection OK";
-            statusDiv.style.color = "#4caf50";
-        } else {
-            statusDiv.innerText = "Waiting for transmission...";
-            statusDiv.style.color = "#888";
-        }
+        // if (data.connected) {
+        //     statusDiv.innerText = "Connection OK";
+        //     statusDiv.style.color = "#4caf50";
+        // } else {
+        //     statusDiv.innerText = "Waiting for transmission...";
+        //     statusDiv.style.color = "#888";
+        // }
 
+        
         updateStats(data.signal, data.temperature, data.humidity);
         updateCharts(data.sequence, data.signal, data.temperature, data.humidity);
         viewStats();
 
-    } catch (error) {
-        console.error("Failed to fetch telemetry data:", error);
-        const statusDiv = document.getElementById('status');
-        if (statusDiv) {
-            statusDiv.innerText = "Server Connection Lost.";
-            statusDiv.style.color = "#ff9800";
+    // } catch (error) {
+    //     console.error("Failed to fetch telemetry data:", error);
+    //     const statusDiv = document.getElementById('status');
+    //     if (statusDiv) {
+    //         statusDiv.innerText = "Server Connection Lost.";
+    //         statusDiv.style.color = "#ff9800";
+    //     }
+    // }
+}
+
+class ConnectionManager{
+    lastPing = 0;
+    currentPing = 0;
+    intervalID = 0;
+    statusDiv = document.getElementById('status');
+    
+    onOpen = () => {
+        this.updateConnectionStatus("open");
+    };
+
+    onMessage = (event) => {
+        try{
+            const message = JSON.parse(event.data);
+            if(message.type == "telemetry"){
+                processTelemetry(message);
+            }
+            else {
+                if(this.lastPing == 0){
+                    console.log("Starting Heartbeat.")
+                    this.startHeartbeat();                           
+                }
+                this.lastPing = Date.now();
+            }            
         }
+        catch(error){
+            console.log("Parsing Error: ", error);
+        }
+    };
+
+    onClose = (event) => {
+        this.updateConnectionStatus("disconnected");
+        console.log("Disconnected. Cleaning up.");
+        this.cleanup();
+    };
+
+    onError = (error) => {
+        console.error("Websocket Error: ", (error));
+    };
+
+    connect(){        
+        this.socket = new WebSocket(`ws://${window.location.host}/ws`);
+        this.socket.addEventListener("open", this.onOpen);
+        this.socket.addEventListener("message", this.onMessage);
+        this.socket.addEventListener("close", this.onClose);
+        this.socket.addEventListener("error", this.onError);
+    }
+
+    startHeartbeat(){
+        this.lastPing = Date.now();
+        this.updateConnectionStatus("connected");
+        this.intervalID = setInterval(()=>{
+            this.manageHeartbeat();
+        }, 1000);                 
+    }
+
+    manageHeartbeat(){
+        this.currentPing = Date.now();        
+        let pingDifference = this.currentPing - this.lastPing;
+        if(pingDifference >= 2000){
+            this.updateConnectionStatus("disconnected");
+            console.log("Server Ping Not Detected.");
+            return;
+        }
+        console.log(`Time Since Last Heartbeat: ${pingDifference}`);
+    }
+    
+    updateConnectionStatus(connectionStatus){
+        switch(connectionStatus){
+            case "open":
+                this.statusDiv.innerText = "Waiting for transmission...";
+                this.statusDiv.style.color = "#888";
+                break;
+
+            case "connected":
+                this.statusDiv.innerText = "Connection OK";
+                this.statusDiv.style.color = "#4caf50";
+                break;
+            
+            case "disconnected":
+                this.statusDiv.innerText = "Server Connection Lost.";
+                this.statusDiv.style.color = "#ff9800";
+                break;
+        }
+    }
+
+    cleanup(){
+        this.lastPing = 0;
+        clearInterval(this.intervalID);
+        this.socket.removeEventListener("open", this.onOpen);
+        this.socket.removeEventListener("message", this.onMessage);
+        this.socket.removeEventListener("close", this.onClose);
+        this.socket.removeEventListener("error", this.onError);
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     updateClock();
-    fetchTelemetry();             
-    setInterval(updateClock, 1000);     // Clock ticks every 1000ms
-    setInterval(fetchTelemetry, 1000); // Telemetry fetches every 1000ms
+    const connection = new ConnectionManager();
+    connection.connect();
+    setInterval(updateClock, 1000);
 });
