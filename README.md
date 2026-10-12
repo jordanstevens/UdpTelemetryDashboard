@@ -1,14 +1,14 @@
 # ESP32 Telemetry Dashboard
-A real-time IoT telemetry system that collects temperature and humidity data from an ESP32 microcontroller via UDP packets and visualizes it on a web dashboard served by FastAPI.
+A real-time IoT telemetry system that collects temperature and humidity data from an ESP32 microcontroller via UDP packets and visualizes it on a web dashboard served by FastAPI. This project served as a self-directed educational excercise to gain knowledge and experience beyond what college curriculum provided.
 
 ## Data Flow
 1. The ESP32 microcontroller reads environmental sensor data and transmits it over the local network as raw UDP packets.
 2. An asynchronous FastAPI server hosts the static frontend files and simultaneously listens on a specific UDP port to capture incoming sensor packets.
-3. The web dashboard requests the sensor data and uses it to update the display.
+3. The server uses a websocket to transmit parsed telemetry packets to the dashboard, which updates the display.
 
 ## Key Features
 - UDP transmission ensures low latency communication and low overhead for microcontroller.
-- On the backend, FastAPI asynchronously reads transmissions and responds to web requests.
+- On the backend, FastAPI asynchronously reads packets and sends parsed telemetry.
 - The frontend is self-hosted with FastAPI serving the static files directly.
 - WiFi signal strength, temperature, and relative humidity are charted, and summary stats displayed, in real time.
 - Each chart uses range-based color coding.
@@ -32,10 +32,10 @@ A real-time IoT telemetry system that collects temperature and humidity data fro
 
 ## Installation and Setup
 ### Backend
-#### 1. Clone the repository.
+#### 1. Clone the repository and navigate to it.
 ```
-git clone https://github.com
-cd your-repo-name/backend
+git clone https://github.com/jordanstevens/UdpTelemetryDashboard
+cd UdpTelemetryDashboard
 ```
 #### 2. Create and activate a virtual environment.
 ```
@@ -70,7 +70,7 @@ const int udpPort = "Your port number";
 
 #### 3. Upload the code to the microcontroller
 1. Now open the ```udpTel_sender.ino``` file found in the same directory.
-2. Ensure that the BME280 sensor is connected to the microcontroller's default I2C pins ( SDA to GPIO-21 and SCL to GPIO-22 On a 30 pin ESP-Wroom-32 ), as well 3.3V power and ground.
+2. Ensure that the BME280 sensor is connected to the microcontroller's default I2C pins ( SDA to GPIO-21 and SCL to GPIO-22 On a 30 pin ESP-Wroom-32 ), as well as 3.3V power and ground.
 3. Connect your microcontroller, select its board type and COM port, and click the upload (Arrow) button.
 4. Once the upload is complete, open the serial monitor of the IDE. The temperature and humidity readings should be updating to the monitor. 
 
