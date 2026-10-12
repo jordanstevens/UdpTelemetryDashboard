@@ -278,9 +278,7 @@ function processTelemetry(data, dashboard) {
 }
 
 class ConnectionManager{
-    lastPing = 0;
-    currentPing = 0;
-    intervalID = 0;
+    watchdog = null;
     statusDiv = document.getElementById('status');
 
     constructor(telemetryCallback){
@@ -289,21 +287,16 @@ class ConnectionManager{
     
     onOpen = () => {
         this.updateConnectionStatus("open");
+        console.log("Connection Opened");
     };
 
     onMessage = (event) => {
         try{
             const message = JSON.parse(event.data);
-            if(message.type == "telemetry"){
-                this.telemetryCallback(message);
-            }
-            else {
-                if(this.lastPing == 0){
-                    console.log("Starting Heartbeat.")
-                    this.startHeartbeat();                           
-                }
-                this.lastPing = Date.now();
-            }            
+            this.updateConnectionStatus("connected");
+            console.log("Message Received!");
+            this.telemetryCallback(message);
+            this.resetWatchdog();
         }
         catch(error){
             console.log("Parsing Error: ", error);
@@ -311,9 +304,11 @@ class ConnectionManager{
     };
 
     onClose = (event) => {
+        console.log(event.code);
         this.updateConnectionStatus("disconnected");
         console.log("Disconnected. Cleaning up.");
         this.cleanup();
+        setTimeout(this.connect(), 3000);
     };
 
     onError = (error) => {
@@ -328,26 +323,15 @@ class ConnectionManager{
         this.socket.addEventListener("error", this.onError);
     }
 
-    startHeartbeat(){
-        this.lastPing = Date.now();
-        this.updateConnectionStatus("connected");
-        this.intervalID = setInterval(()=>{
-            this.manageHeartbeat();
-        }, 1000);                 
+    resetWatchdog(){
+        clearTimeout(this.watchdog);
+        this.watchdog = setTimeout(()=>{
+            console.warn("Watchdog timed out. Disconnecting.");
+            this.updateConnectionStatus("disconnected");
+            this.socket.close();
+        }, 2500);
     }
 
-    manageHeartbeat(){
-        this.currentPing = Date.now();        
-        let pingDifference = this.currentPing - this.lastPing;
-        if(pingDifference >= 2000){
-            this.updateConnectionStatus("disconnected");
-            console.log("Server Ping Not Detected.");
-            this.socket.close();
-            return;
-        }
-        console.log(`Time Since Last Heartbeat: ${pingDifference}`);
-    }
-    
     updateConnectionStatus(connectionStatus){
         switch(connectionStatus){
             case "open":
@@ -368,8 +352,7 @@ class ConnectionManager{
     }
 
     cleanup(){
-        this.lastPing = 0;
-        clearInterval(this.intervalID);
+        clearTimeout(this.watchdog);
         this.socket.removeEventListener("open", this.onOpen);
         this.socket.removeEventListener("message", this.onMessage);
         this.socket.removeEventListener("close", this.onClose);
@@ -384,5 +367,10 @@ document.addEventListener("DOMContentLoaded", () => {
         processTelemetry(payload, dashboard);
     });
     connection.connect();
+    window.addEventListener("pagehide", ()=>{
+        if(connection.socket.readyState === WebSocket.OPEN){
+            connection.socket.close();
+        }
+    });
     setInterval(updateClock, 1000);
 });
