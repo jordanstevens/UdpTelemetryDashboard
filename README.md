@@ -92,7 +92,7 @@ const int udpPort = 5005; // Enter your target UDP port number here
 1. Ensure your virtual environment is active in your terminal (`(venv)` should appear before the prompt). If not, run `.\venv\Scripts\activate`.
 2. Start the FastAPI backend server:
    ```bash
-   fastapi telemetry_server.py
+   python telemetry_server.py
    ```
 3. Open a **second terminal window** and run the simulator script (it uses native Python libraries, so no virtual environment activation is required here):
    ```bash
@@ -106,7 +106,7 @@ const int udpPort = 5005; // Enter your target UDP port number here
 2. Make sure that the virtual environment is active in your terminal. If not, run `.\venv\Scripts\activate`.
 3. Start the server by running:
    ```bash
-   fastapi telemetry_server.py
+   python telemetry_server.py
    ```
 4. Open your web browser and navigate to `http://127.0.0.1:8000`.
 5. FastAPI will serve the static files to the browser and seamlessly update the UI using live telemetry pushed directly from the ESP32 over the network stack.
